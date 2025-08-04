@@ -1,0 +1,2 @@
+model,accuracy,f1_weighted,confusion_matrix
+logistic_regression,0.6298076923076923,0.5799309982898134,"[[0, 122, 29], [0, 746, 124], [0, 264, 171]]"

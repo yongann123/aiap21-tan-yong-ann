@@ -1,0 +1,2 @@
+model,accuracy,f1_weighted,confusion_matrix
+random_forest,0.9375,0.9373634144372406,"[[127, 11, 13], [0, 836, 34], [1, 32, 402]]"

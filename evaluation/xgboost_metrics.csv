@@ -1,0 +1,2 @@
+model,accuracy,f1_weighted,confusion_matrix
+xgboost,0.9361263736263736,0.9360423319904687,"[[128, 11, 12], [1, 833, 36], [2, 31, 402]]"
