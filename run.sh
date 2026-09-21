@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PYTHON="C:/Python312/python.exe"
+PYTHON="python"
 
 echo "===== Starting End-to-End ML Pipeline ====="
 
