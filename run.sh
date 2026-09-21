@@ -1,6 +1,12 @@
 #!/bin/bash
 
-PYTHON="python"
+if [ -f ".venv/Scripts/python.exe" ]; then
+    PYTHON=".venv/Scripts/python.exe"
+elif [ -f ".venv/bin/python" ]; then
+    PYTHON=".venv/bin/python"
+else
+    PYTHON="python"
+fi
 
 echo "===== Starting End-to-End ML Pipeline ====="
 

@@ -75,11 +75,10 @@ def get_best_model(model_name, X_train, y_train):
     scoring = 'f1_weighted'
 
     if model_name == "logistic_regression":
-        model = LogisticRegression(max_iter=1000)
+        model = LogisticRegression(solver='saga', max_iter=2000, random_state=42)
         param_grid = {
-            'penalty': ['l1', 'l2'],
+            'l1_ratio': [0.0, 1.0],
             'C': [0.001, 0.01, 0.1, 1, 10, 100],
-            'solver': ['liblinear']  # Supports both L1 and L2
         }
         grid = GridSearchCV(estimator=model, param_grid=param_grid, 
                             cv=cv, scoring=scoring, n_jobs=-1, verbose=1)
@@ -106,7 +105,7 @@ def get_best_model(model_name, X_train, y_train):
         return rand_search.best_estimator_
 
     elif model_name == "xgboost":
-        model = XGBClassifier(use_label_encoder=False, eval_metric='mlogloss')
+        model = XGBClassifier(eval_metric='mlogloss', random_state=42)
         param_dist = {
             'n_estimators': [100, 200, 500],
             'max_depth': [3, 5, 7, 10],
@@ -139,13 +138,9 @@ def main():
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.2, random_state=42)
 
-    models = {
-        "logistic_regression": LogisticRegression(class_weight='balanced', max_iter=1000),
-        "random_forest": RandomForestClassifier(n_estimators=100, random_state=42),
-        "xgboost": XGBClassifier(eval_metric='mlogloss')
-    }
+    model_names = ["logistic_regression", "random_forest", "xgboost"]
 
-    for name, model in models.items():
+    for name in model_names:
         print(f"\nTraining {name}...")
         best_model = get_best_model(name, X_train, y_train)
 
@@ -162,7 +157,7 @@ def main():
         y_test_labels = [inverse_mapping[true] for true in y_test]
 
         print(f"\n{name} classification report:")
-        print(classification_report(y_test_labels, y_labels))
+        print(classification_report(y_test_labels, y_labels, zero_division=0))
 
 if __name__ == "__main__":
     main()

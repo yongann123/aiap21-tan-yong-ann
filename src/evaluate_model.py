@@ -51,7 +51,7 @@ def evaluate(model, X_test, y_test_encoded, model_name, inverse_mapping):
     y_true = [inverse_mapping[t] for t in y_test_encoded]
 
     acc = accuracy_score(y_true, y_pred)
-    f1 = f1_score(y_true, y_pred, average='weighted')
+    f1 = f1_score(y_true, y_pred, average='weighted', zero_division=0)
     cm = confusion_matrix(y_true, y_pred)
 
     print(f"\n====== {model_name.upper()} ======")
@@ -60,7 +60,7 @@ def evaluate(model, X_test, y_test_encoded, model_name, inverse_mapping):
     print("Confusion Matrix:")
     print(cm)
     print("Classification Report:")
-    print(classification_report(y_true, y_pred))
+    print(classification_report(y_true, y_pred, zero_division=0))
 
     # Save to disk
     metrics = {
@@ -70,7 +70,7 @@ def evaluate(model, X_test, y_test_encoded, model_name, inverse_mapping):
         "confusion_matrix": cm.tolist()
     }
     save_metrics_json_csv(model_name, metrics)
-    plot_confusion_matrix(cm, labels=inverse_mapping.values(), model_name=model_name)
+    plot_confusion_matrix(cm, labels=list(inverse_mapping.values()), model_name=model_name)
 
 
 def main():
@@ -84,7 +84,7 @@ def main():
     y = y.map(mapping)
     inverse_mapping = {v: k for k, v in mapping.items()}
 
-    _, X_test, _, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    _, X_test, _, y_test = train_test_split(X, y, stratify=y, test_size=0.2, random_state=42)
 
     #model_names = ["xgboost"]
 

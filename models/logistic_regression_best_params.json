@@ -1,5 +1,4 @@
 {
-    "C": 10,
-    "penalty": "l1",
-    "solver": "liblinear"
+    "C": 0.1,
+    "l1_ratio": 0.0
 }

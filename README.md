@@ -9,44 +9,45 @@
 
 ## 🔧 Project Structure Overview
 
-```
-
+```text
 .
 ├── data/
-│   ├── gas\_monitoring.db             # Not committed to GitHub
-│   ├── loaded\_data.csv               # Output of data\_loader.py
-│   ├── cleaned\_data.csv              # Output of preprocessing.py
-│   └── featured\_data.csv             # Output of feature\_engineering.py
+│   ├── gas_monitoring.db             # Raw SQLite database
+│   ├── loaded_data.csv               # Output of data_loader.py
+│   ├── cleaned_data.csv              # Output of preprocessing.py
+│   └── featured_data.csv             # Output of feature_engineering.py
 ├── models/
-│   ├── logistic\_regression.pkl
-│   ├── random\_forest.pkl
+│   ├── logistic_regression.pkl
+│   ├── random_forest.pkl
 │   ├── xgboost.pkl
-│   ├── activity\_level\_mapping.pkl
-│   ├── \*\_best\_params.json
+│   ├── activity_level_mapping.pkl
+│   └── *_best_params.json
 ├── evaluation/
-│   ├── \*.json / \*.csv / \*.png        # Evaluation metrics and plots
+│   ├── *.json / *.csv / *.png        # Evaluation metrics and confusion matrices
 ├── src/
-│   ├── data\_loader.py
+│   ├── data_loader.py
 │   ├── preprocessing.py
-│   ├── feature\_engineering.py
-│   ├── train\_model.py
-│   ├── evaluate\_model.py
+│   ├── feature_engineering.py
+│   ├── train_model.py
+│   └── evaluate_model.py
 ├── eda.ipynb
 ├── run.sh
 ├── requirements.txt
 └── README.md
-
-````
+```
 
 ---
 
 ## ▶️ How to Run the Pipeline
 
-1. Place `gas_monitoring.db` inside the `data/` folder.
+1. Ensure dependencies are installed in your Python environment:
+   ```bash
+   pip install -r requirements.txt
+   ```
 2. From the project root, execute:
    ```bash
    bash run.sh
-    ```
+   ```
 
 This will execute the full pipeline:
 
@@ -99,10 +100,6 @@ The following settings are easily adjustable:
    * Uses cross-validation + hyperparameter tuning
    * Saves best model + parameters
 
-> **Note**: During XGBoost training, you may see the warning  
-> `Parameters: { "use_label_encoder" } are not used.`  
-> This is expected and safe to ignore — it's due to recent changes in the XGBoost library.  
-
 5. **Model Evaluation** (`evaluate_model.py`):
 
    * Evaluates on a fresh stratified 20% split
@@ -119,7 +116,7 @@ The following settings are easily adjustable:
 
 * **Outliers & Invalids** were found in `Temperature`, `Humidity`, `CO2_InfraredSensor`, and removed.
 * **HVAC Operation Mode** and **Ambient Light Level** showed little correlation with `Activity Level` → dropped.
-* **CO\_GasSensor** and **Time of Day** encoded ordinally.
+* **CO_GasSensor** and **Time of Day** encoded ordinally.
 * New engineered features revealed stronger correlations.
 
 ---
@@ -128,12 +125,12 @@ The following settings are easily adjustable:
 
 | Model               | Accuracy | Weighted F1 | High Activity F1 |
 | ------------------- | -------- | ----------- | ---------------- |
-| Logistic Regression | \~0.63   | \~0.57      | 0.00             |
-| Random Forest       | \~0.94   | \~0.94      | \~0.91           |
-| XGBoost             | \~0.94   | \~0.94      | \~0.91           |
+| Logistic Regression | ~0.63   | ~0.57      | 0.00             |
+| Random Forest       | ~0.67   | ~0.65      | ~0.16           |
+| XGBoost             | ~0.67   | ~0.65      | ~0.17           |
 
 * Logistic regression failed to capture non-linear patterns. In particular, it consistently failed to classify minority classes such as "High Activity", even after applying class weighting and stratified sampling. This is likely due to the linear decision boundary assumption, which is unsuitable for the non-linear nature of the sensor data. Therefore, Random Forest and XGBoost were preferred due to their ability to model complex relationships and handle class imbalance more effectively.
-* Random Forest and XGBoost significantly outperformed, handling class imbalance better and showing strong recall for "High Activity".
+* Random Forest and XGBoost significantly outperformed the linear baseline, handling non-linearity better and predicting all three activity classes on the holdout test set.
 
 ---
 
@@ -183,8 +180,8 @@ To tackle the multi-class classification task of predicting resident activity le
   - Performs well with minimal preprocessing
 
 - **Performance in this task**:
-  - Significantly improved detection of all classes, including "High Activity"
-  - Achieved >93% accuracy and strong recall across the board
+  - Significantly improved detection across classes compared to linear baseline
+  - Achieved ~67% accuracy and ~65% weighted F1 on the holdout test set
 
 ---
 
@@ -200,8 +197,8 @@ To tackle the multi-class classification task of predicting resident activity le
   - Typically **state-of-the-art** in tabular data competitions
 
 - **Performance in this task**:
-  - Matched Random Forest’s performance (~94% accuracy)
-  - Slightly more compact model and competitive recall for "High Activity"
+  - Matched Random Forest’s performance (~67% accuracy, ~65% weighted F1)
+  - Slightly more compact model and highest recall for "High Activity"
   - May offer better generalization under future deployments
 
 ---
